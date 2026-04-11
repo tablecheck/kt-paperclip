@@ -16,7 +16,7 @@ module Paperclip
       orientation = Paperclip.options[:use_exif_orientation] ?
         "%[exif:orientation]" : "1"
       Paperclip.run(
-        Paperclip.options[:is_windows] ? "magick identify" : "identify",
+        Paperclip::ImageMagickVersionDetector.identify_command,
         "-format '%wx%h,#{orientation}' :file", {
           file: "#{path}[0]"
         },

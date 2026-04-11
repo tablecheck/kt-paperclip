@@ -31,13 +31,24 @@ Paperclip.options[:logger] = ActiveRecord::Base.logger
 Dir[File.join(ROOT, "spec", "support", "**", "*.rb")].each { |f| require f }
 
 Rails = FakeRails.new("test", Pathname.new(ROOT).join("tmp"))
-ActiveSupport::Deprecation.silenced = true
+if ActiveSupport::Deprecation.respond_to?(:silenced=)
+  ActiveSupport::Deprecation.silenced = true
+else
+  ActiveSupport.deprecator.silenced = true
+end
+
+module ImageMagickTestHelper
+  def identify_command
+    Paperclip::ImageMagickVersionDetector.identify_command
+  end
+end
 
 RSpec.configure do |config|
   config.include Assertions
   config.include ModelReconstruction
   config.include TestData
   config.include Reporting
+  config.include ImageMagickTestHelper
   config.extend VersionHelper
 
   config.before(:all) do

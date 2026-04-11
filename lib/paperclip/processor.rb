@@ -37,7 +37,7 @@ module Paperclip
     # See Paperclip.run for the available options.
     def convert(arguments = "", local_options = {})
       Paperclip.run(
-        Paperclip.options[:is_windows] ? "magick convert" : "convert",
+        Paperclip::ImageMagickVersionDetector.convert_command,
         arguments,
         local_options
       )
@@ -47,7 +47,7 @@ module Paperclip
     # See Paperclip.run for the available options.
     def identify(arguments = "", local_options = {})
       Paperclip.run(
-        Paperclip.options[:is_windows] ? "magick identify" : "identify",
+        Paperclip::ImageMagickVersionDetector.identify_command,
         arguments,
         local_options
       )

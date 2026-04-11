@@ -36,6 +36,38 @@ describe Paperclip::GeometryDetector do
     end
   end
 
+  context "with ImageMagick 7" do
+    before do
+      allow(Paperclip::ImageMagickVersionDetector).to receive(:identify_command).and_return("magick identify")
+    end
+
+    it "uses magick identify for geometry detection" do
+      allow_any_instance_of(Paperclip::GeometryParser).to receive(:make).and_return(:correct)
+      file = fixture_file("5k.png")
+
+      expect(Paperclip).to receive(:run)
+        .with("magick identify", anything, anything, anything)
+        .and_return("434x66,1")
+      Paperclip::GeometryDetector.new(file).make
+    end
+  end
+
+  context "with ImageMagick 6" do
+    before do
+      allow(Paperclip::ImageMagickVersionDetector).to receive(:identify_command).and_return("identify")
+    end
+
+    it "uses identify for geometry detection" do
+      allow_any_instance_of(Paperclip::GeometryParser).to receive(:make).and_return(:correct)
+      file = fixture_file("5k.png")
+
+      expect(Paperclip).to receive(:run)
+        .with("identify", anything, anything, anything)
+        .and_return("434x66,1")
+      Paperclip::GeometryDetector.new(file).make
+    end
+  end
+
   it "raises an exception with a message when the file is not an image" do
     file = fixture_file("text.txt")
     factory = Paperclip::GeometryDetector.new(file)

@@ -33,6 +33,7 @@ require "paperclip/geometry_parser_factory"
 require "paperclip/geometry_detector_factory"
 require "paperclip/geometry"
 require "paperclip/processor"
+require "paperclip/imagemagick_version_detector"
 require "paperclip/processor_helpers"
 require "paperclip/tempfile"
 require "paperclip/thumbnail"
@@ -91,6 +92,7 @@ module Paperclip
     @options ||= {
       command_path: nil,
       content_type_mappings: {},
+      imagemagick_version: nil,
       log: true,
       log_command: true,
       read_timeout: nil,

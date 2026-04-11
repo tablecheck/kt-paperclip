@@ -18,7 +18,7 @@ describe Paperclip::Thumbnail do
         end
 
         it "starts with dimensions of 434x66" do
-          cmd = %[identify -format "%wx%h" "#{@file.path}"]
+          cmd = %[#{identify_command} -format "%wx%h" "#{@file.path}"]
           assert_equal "434x66", `#{cmd}`.chomp
         end
 
@@ -32,7 +32,7 @@ describe Paperclip::Thumbnail do
           end
 
           it "is the size we expect it to be" do
-            cmd = %[identify -format "%wx%h" "#{@thumb_result.path}"]
+            cmd = %[#{identify_command} -format "%wx%h" "#{@thumb_result.path}"]
             assert_equal args[1], `#{cmd}`.chomp
           end
         end
@@ -91,7 +91,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the thumbnail when sent #make" do
         dst = @thumb.make
-        assert_match /100x50/, `identify "#{dst.path}"`
+        assert_match /100x50/, `#{identify_command} "#{dst.path}"`
       end
     end
 
@@ -101,7 +101,7 @@ describe Paperclip::Thumbnail do
 
       output_file = thumb.make
 
-      command = Terrapin::CommandLine.new("identify", "-format %wx%h :file")
+      command = Terrapin::CommandLine.new(identify_command, "-format %wx%h :file")
       assert_equal "50x50", command.run(file: output_file.path).strip
     end
 
@@ -126,7 +126,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the thumbnail when sent #make" do
         dst = @thumb.make
-        assert_match /100x50/, `identify "#{dst.path}"`
+        assert_match /100x50/, `#{identify_command} "#{dst.path}"`
       end
 
       context "redefined to have bad source_file_options setting" do
@@ -167,7 +167,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the thumbnail when sent #make" do
         dst = @thumb.make
-        assert_match /100x50/, `identify "#{dst.path}"`
+        assert_match /100x50/, `#{identify_command} "#{dst.path}"`
       end
 
       context "redefined to have bad convert_options setting" do
@@ -293,7 +293,7 @@ describe Paperclip::Thumbnail do
     after { @file.close }
 
     it "starts with two pages with dimensions 612x792" do
-      cmd = %[identify -format "%wx%h" "#{@file.path}"]
+      cmd = %[#{identify_command} -format "%wx%h" "#{@file.path}"]
       assert_equal "612x792" * 2, `#{cmd}`.chomp
     end
 
@@ -313,7 +313,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the thumbnail when sent #make" do
         dst = @thumb.make
-        assert_match /100x100/, `identify "#{dst.path}"`
+        assert_match /100x100/, `#{identify_command} "#{dst.path}"`
       end
     end
   end
@@ -326,7 +326,7 @@ describe Paperclip::Thumbnail do
     after { @file.close }
 
     it "starts with 12 frames with size 100x100" do
-      cmd = %[identify -format "%wx%h" "#{@file.path}"]
+      cmd = %[#{identify_command} -format "%wx%h" "#{@file.path}"]
       assert_equal "100x100" * 12, `#{cmd}`.chomp
     end
 
@@ -337,7 +337,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the single frame thumbnail when sent #make" do
         dst = @thumb.make
-        cmd = %[identify -format "%wx%h" "#{dst.path}"]
+        cmd = %[#{identify_command} -format "%wx%h" "#{dst.path}"]
         assert_equal "50x50", `#{cmd}`.chomp
       end
     end
@@ -349,7 +349,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the 12 frames thumbnail when sent #make" do
         dst = @thumb.make
-        cmd = %[identify -format "%wx%h," "#{dst.path}"]
+        cmd = %[#{identify_command} -format "%wx%h," "#{dst.path}"]
         frames = `#{cmd}`.chomp.split(",")
         assert_equal 12, frames.size
         assert_frame_dimensions (45..50), frames
@@ -371,7 +371,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the 12 frames thumbnail when sent #make" do
         dst = @thumb.make
-        cmd = %[identify -format "%wx%h," "#{dst.path}"]
+        cmd = %[#{identify_command} -format "%wx%h," "#{dst.path}"]
         frames = `#{cmd}`.chomp.split(",")
         assert_equal 12, frames.size
         assert_frame_dimensions (45..50), frames
@@ -394,7 +394,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the 12 frames thumbnail when sent #make" do
         dst = @thumb.make
-        cmd = %[identify -format "%wx%h," "#{dst.path}"]
+        cmd = %[#{identify_command} -format "%wx%h," "#{dst.path}"]
         frames = `#{cmd}`.chomp.split(",")
         assert_equal 12, frames.size
         assert_frame_dimensions (55..60), frames
@@ -417,7 +417,7 @@ describe Paperclip::Thumbnail do
 
       it "creates the 12 frames thumbnail when sent #make" do
         dst = @thumb.make
-        cmd = %[identify -format "%wx%h," "#{dst.path}"]
+        cmd = %[#{identify_command} -format "%wx%h," "#{dst.path}"]
         frames = `#{cmd}`.chomp.split(",")
         assert_equal 12, frames.size
         assert_frame_dimensions (60..70), frames
@@ -439,13 +439,13 @@ describe Paperclip::Thumbnail do
 
       it "outputs the gif format" do
         dst = @thumb.make
-        cmd = %[identify "#{dst.path}"]
+        cmd = %[#{identify_command} "#{dst.path}"]
         assert_match /GIF/, `#{cmd}`.chomp
       end
 
       it "creates the single frame thumbnail when sent #make" do
         dst = @thumb.make
-        cmd = %[identify -format "%wx%h" "#{dst.path}"]
+        cmd = %[#{identify_command} -format "%wx%h" "#{dst.path}"]
         assert_equal "50x50", `#{cmd}`.chomp
       end
     end

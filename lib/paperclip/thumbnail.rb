@@ -87,7 +87,7 @@ module Paperclip
           raise Paperclip::Error, message
         end
       rescue Terrapin::CommandNotFoundError => e
-        raise Paperclip::Errors::CommandNotFoundError.new("Could not run the `convert` command. Please install ImageMagick.")
+        raise Paperclip::Errors::CommandNotFoundError.new("Could not run the `#{Paperclip::ImageMagickVersionDetector.convert_command}` command. Please install ImageMagick.")
       end
 
       dst
@@ -125,7 +125,7 @@ module Paperclip
     rescue Terrapin::ExitStatusError => e
       raise Paperclip::Error, "There was an error running `identify` for #{@basename}" if @whiny
     rescue Terrapin::CommandNotFoundError => e
-      raise Paperclip::Errors::CommandNotFoundError.new("Could not run the `identify` command. Please install ImageMagick.")
+      raise Paperclip::Errors::CommandNotFoundError.new("Could not run the `#{Paperclip::ImageMagickVersionDetector.identify_command}` command. Please install ImageMagick.")
     end
   end
 end

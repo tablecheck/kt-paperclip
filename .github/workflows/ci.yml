@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: 
+          - ruby-3.1
+          - ruby-3.2
+          - ruby-3.3
+        imagemagick:
+          - '6'
+          - '7'
+
+    name: Ruby ${{ matrix.ruby }} / ImageMagick ${{ matrix.imagemagick }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ImageMagick 6
+        if: matrix.imagemagick == '6'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick libmagickwand-dev ghostscript
+          sudo rm -f /etc/ImageMagick-6/policy.xml
+          convert -version
+
+      - name: Install ImageMagick 7
+        if: matrix.imagemagick == '7'
+        run: |
+          sudo apt-get update
+          sudo apt-get remove -y imagemagick imagemagick-6-common || true
+          sudo apt-get install -y build-essential pkg-config ghostscript \
+            libjpeg-dev libpng-dev libtiff-dev libwebp-dev \
+            libfreetype6-dev libfontconfig1-dev libxml2-dev
+          cd /tmp
+          wget -q https://imagemagick.org/archive/ImageMagick.tar.gz
+          tar xzf ImageMagick.tar.gz
+          cd ImageMagick-*
+          ./configure --with-modules --enable-shared --quiet
+          make -j$(nproc) --quiet
+          sudo make install --quiet
+          sudo ldconfig
+          magick -version
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+        env:
+          BUNDLE_GEMFILE: gemfiles/7.0.gemfile
+
+      - name: Run specs
+        run: bundle exec rspec
+        env:
+          BUNDLE_GEMFILE: gemfiles/7.0.gemfile
